@@ -1,40 +1,56 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-
-	"github.com/supertokens/supertokens-golang/recipe/session"
-	"github.com/supertokens/supertokens-golang/recipe/thirdpartyemailpassword"
-	"github.com/supertokens/supertokens-golang/recipe/thirdpartyemailpassword/tpepmodels"
-	"github.com/supertokens/supertokens-golang/supertokens"
+	"log"
+	"net/http"
 )
 
-func main() {
+// Post struct
+type Post struct {
+	Author    string `json:"author"`
+	Content   string `json:"content"`
+	Likes     int    `json:"likes"`
+	Reposts   int    `json:"reposts"`
+	Timestamp string `json:"timestamp"`
+}
 
-	fmt.Print("Hello World")
+// Posts array
+type Posts []Post
 
-	apiBasePath := "/auth"
-	websiteBasePath := "/auth"
-	err := supertokens.Init(supertokens.TypeInput{
-		Supertokens: &supertokens.ConnectionInfo{
-			// https://try.supertokens.com is for demo purposes. Replace this with the address of your core instance (sign up on supertokens.com), or self host a core.
-			ConnectionURI: "https://try.supertokens.com",
-			// APIKey: <API_KEY(if configured)>,
-		},
-		AppInfo: supertokens.AppInfo{
-			AppName:         "<YOUR_APP_NAME>",
-			APIDomain:       "<YOUR_API_DOMAIN>",
-			WebsiteDomain:   "<YOUR_WEBSITE_DOMAIN>",
-			APIBasePath:     &apiBasePath,
-			WebsiteBasePath: &websiteBasePath,
-		},
-		RecipeList: []supertokens.Recipe{
-			thirdpartyemailpassword.Init(&tpepmodels.TypeInput{}),
-			session.Init(nil), // initializes session features
-		},
-	})
+func getPosts(w http.ResponseWriter, r *http.Request) {
 
-	if err != nil {
-		panic(err.Error())
+	posts := Posts{
+		Post{
+			Author:    "ibxcodecat",
+			Content:   "I like cats!",
+			Likes:     0,
+			Reposts:   0,
+			Timestamp: "2021-01-01 00:00:00",
+		},
+		{
+			Author:    "ibxcodecat",
+			Content:   "I like dogs!",
+			Likes:     0,
+			Reposts:   0,
+			Timestamp: "2021-01-01 00:00:00",
+		},
 	}
+	fmt.Println("Endpoint Hit: getPosts")
+	json.NewEncoder(w).Encode(posts)
+}
+
+func Page(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "OPEX API Hit")
+}
+
+func HandleRequests() {
+	http.HandleFunc("/", Page)
+	http.HandleFunc("/posts", getPosts)
+	log.Fatal(http.ListenAndServe(":8081", nil))
+}
+
+func main() {
+	HandleRequests()
 }
