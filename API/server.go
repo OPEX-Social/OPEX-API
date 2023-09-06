@@ -1,5 +1,7 @@
+// Version: 1.0
 package main
 
+// Import required packages
 import (
 	"encoding/json"
 	"fmt"
@@ -9,12 +11,97 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/supertokens/supertokens-golang/recipe/dashboard"
 	"github.com/supertokens/supertokens-golang/recipe/emailpassword"
 	"github.com/supertokens/supertokens-golang/recipe/session"
 	"github.com/supertokens/supertokens-golang/supertokens"
 
+	"github.com/supertokens/supertokens-golang/recipe/passwordless"
+	"github.com/supertokens/supertokens-golang/recipe/passwordless/plessmodels"
+
 	"github.com/joho/godotenv"
 )
+
+// main - Entry point of the API
+func main() {
+
+	// load .env file
+	godotenv.Load(".env")
+
+	// Initialize SuperTokens
+	SuperTokensInit()
+
+	// Call the request handler function
+	HandleRequests()
+}
+
+// goDotEnvVariable - Loads .env file and returns the value of the key
+func goDotEnvVariable(key string) string {
+
+	// load .env file
+	err := godotenv.Load("../.env")
+
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
+	return os.Getenv(key)
+}
+
+// SuperTokensInit - Called by main() initializes SuperTokens
+func SuperTokensInit() {
+
+	apiBasePath := "/auth"
+	websiteBasePath := "/auth"
+	err := supertokens.Init(supertokens.TypeInput{
+		Supertokens: &supertokens.ConnectionInfo{
+			ConnectionURI: goDotEnvVariable("SUPERTOKENS_CONNECTION_URI"),
+			APIKey:        goDotEnvVariable("SUPERTOKENS_API_KEY"),
+		},
+		AppInfo: supertokens.AppInfo{
+			AppName:         "OPEX",
+			APIDomain:       "http://localhost:8081",
+			WebsiteDomain:   "http://localhost:3000",
+			APIBasePath:     &apiBasePath,
+			WebsiteBasePath: &websiteBasePath,
+		},
+		RecipeList: []supertokens.Recipe{
+			passwordless.Init(plessmodels.TypeInput{
+				FlowType: "USER_INPUT_CODE_AND_MAGIC_LINK",
+				ContactMethodEmail: plessmodels.ContactMethodEmailConfig{
+					Enabled: true,
+				},
+			}),
+			dashboard.Init(nil),
+			emailpassword.Init(nil),
+			session.Init(nil),
+		},
+	})
+
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
+// HandleRequests - Called by main() handles all API requests
+func HandleRequests() {
+	// creates a new instance of a mux router and assigns it to router
+	router := mux.NewRouter().StrictSlash(true)
+
+	//Add our API routes and specify their respective functions and methods
+	router.HandleFunc("/", Page)
+	router.HandleFunc("/posts", getPosts).Methods("GET")
+	router.HandleFunc("/posts", createPost).Methods("POST")
+
+	// Adding handlers.CORS(options)(supertokens.Middleware(router)))
+	http.ListenAndServe(":8081", handlers.CORS(
+		handlers.AllowedHeaders(append([]string{"Content-Type"},
+			supertokens.GetAllCORSHeaders()...)),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+		handlers.AllowedOrigins([]string{"http://localhost:3000"}),
+		handlers.AllowCredentials(),
+	)(supertokens.Middleware(router)))
+}
 
 // Post struct
 type Post struct {
@@ -58,68 +145,7 @@ func Page(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "OPEX API Hit")
 }
 
-func HandleRequests() {
-
-	// creates a new instance of a mux router and assigns it to router
-	router := mux.NewRouter().StrictSlash(true)
-
-	//Add our API routes and specify their respective functions and methods
-	router.HandleFunc("/", Page)
-	router.HandleFunc("/posts", getPosts).Methods("GET")
-	router.HandleFunc("/posts", createPost).Methods("POST")
-
-	// Adding handlers.CORS(options)(supertokens.Middleware(router)))
-	http.ListenAndServe(":8081", handlers.CORS(
-		handlers.AllowedHeaders(append([]string{"Content-Type"},
-			supertokens.GetAllCORSHeaders()...)),
-		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
-		handlers.AllowedOrigins([]string{"http://localhost:3000"}),
-		handlers.AllowCredentials(),
-	)(supertokens.Middleware(router)))
-}
-
-func main() {
-
-	godotenv.Load(".env")
-
-	apiBasePath := "/auth"
-	websiteBasePath := "/auth"
-	err := supertokens.Init(supertokens.TypeInput{
-		Supertokens: &supertokens.ConnectionInfo{
-			ConnectionURI: goDotEnvVariable("SUPERTOKENS_CONNECTION_URI"),
-			APIKey:        goDotEnvVariable("SUPERTOKENS_API_KEY"),
-		},
-		AppInfo: supertokens.AppInfo{
-			AppName:         "OPEX",
-			APIDomain:       "http://localhost:8081",
-			WebsiteDomain:   "http://localhost:3000",
-			APIBasePath:     &apiBasePath,
-			WebsiteBasePath: &websiteBasePath,
-		},
-		RecipeList: []supertokens.Recipe{
-			emailpassword.Init(nil),
-			session.Init(nil),
-		},
-	})
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	// Call the request handler function
-	HandleRequests()
-}
-
-// use godot package to load/read the .env file and
-// return the value of the key
-func goDotEnvVariable(key string) string {
-
-	// load .env file
-	err := godotenv.Load(".env")
-
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-
-	return os.Getenv(key)
+type SignupRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
