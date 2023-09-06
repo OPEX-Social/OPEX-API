@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/supertokens/supertokens-golang/recipe/session"
 	"github.com/supertokens/supertokens-golang/recipe/thirdpartyemailpassword"
 	"github.com/supertokens/supertokens-golang/recipe/thirdpartyemailpassword/tpepmodels"
@@ -8,6 +10,9 @@ import (
 )
 
 func main() {
+
+	fmt.Print("Hello World")
+
 	apiBasePath := "/auth"
 	websiteBasePath := "/auth"
 	err := supertokens.Init(supertokens.TypeInput{
@@ -24,7 +29,7 @@ func main() {
 			WebsiteBasePath: &websiteBasePath,
 		},
 		RecipeList: []supertokens.Recipe{
-			thirdpartyemailpassword.Init(&tpepmodels.TypeInput{ /*TODO: See next step*/ }),
+			thirdpartyemailpassword.Init(&tpepmodels.TypeInput{}),
 			session.Init(nil), // initializes session features
 		},
 	})
