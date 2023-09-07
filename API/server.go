@@ -11,7 +11,10 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/supertokens/supertokens-golang/recipe/dashboard"
 	"github.com/supertokens/supertokens-golang/recipe/emailpassword"
+	"github.com/supertokens/supertokens-golang/recipe/emailverification"
+	"github.com/supertokens/supertokens-golang/recipe/emailverification/evmodels"
 	"github.com/supertokens/supertokens-golang/recipe/session"
 	"github.com/supertokens/supertokens-golang/supertokens"
 
@@ -51,8 +54,8 @@ func SuperTokensInit() {
 	err := supertokens.Init(supertokens.TypeInput{
 		Supertokens: &supertokens.ConnectionInfo{
 			// These are the connection details of the app you created on supertokens.com
-			ConnectionURI: "https://st-dev-542a1560-4cc0-11ee-9fe8-cf09491f6e40.aws.supertokens.io",
-			APIKey:        "UnuW=a5b8hWCRS9yxzP2KYvyRE",
+			ConnectionURI: goDotEnvVariable("SUPERTOKENS_CONNECTION_URI"),
+			APIKey:        goDotEnvVariable("SUPERTOKENS_API_KEY"),
 		},
 		AppInfo: supertokens.AppInfo{
 			AppName:         "OPEX",
@@ -64,6 +67,10 @@ func SuperTokensInit() {
 		RecipeList: []supertokens.Recipe{
 			emailpassword.Init(nil),
 			session.Init(nil),
+			dashboard.Init(nil),
+			emailverification.Init(evmodels.TypeInput{
+				Mode: evmodels.ModeOptional, // or evmodels.ModeOptional
+			}),
 		},
 	})
 
