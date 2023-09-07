@@ -69,7 +69,7 @@ func SuperTokensInit() {
 			session.Init(nil),
 			dashboard.Init(nil),
 			emailverification.Init(evmodels.TypeInput{
-				Mode: evmodels.ModeOptional, // or evmodels.ModeOptional
+				Mode: evmodels.ModeRequired, // or evmodels.ModeOptional
 			}),
 		},
 	})
@@ -113,7 +113,7 @@ type Posts []Post
 
 func getPosts(w http.ResponseWriter, r *http.Request) {
 
-	posts := Posts{
+	postsSampleData := Posts{
 		Post{
 			Author:    "ibxcodecat",
 			Content:   "I like cats!",
@@ -130,7 +130,7 @@ func getPosts(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 	fmt.Println("Endpoint Hit: getPosts")
-	json.NewEncoder(w).Encode(posts)
+	json.NewEncoder(w).Encode(postsSampleData)
 }
 
 func createPost(w http.ResponseWriter, r *http.Request) {
