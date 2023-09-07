@@ -11,13 +11,9 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/supertokens/supertokens-golang/recipe/dashboard"
 	"github.com/supertokens/supertokens-golang/recipe/emailpassword"
 	"github.com/supertokens/supertokens-golang/recipe/session"
 	"github.com/supertokens/supertokens-golang/supertokens"
-
-	"github.com/supertokens/supertokens-golang/recipe/passwordless"
-	"github.com/supertokens/supertokens-golang/recipe/passwordless/plessmodels"
 
 	"github.com/joho/godotenv"
 )
@@ -50,13 +46,13 @@ func goDotEnvVariable(key string) string {
 
 // SuperTokensInit - Called by main() initializes SuperTokens
 func SuperTokensInit() {
-
 	apiBasePath := "/auth"
 	websiteBasePath := "/auth"
 	err := supertokens.Init(supertokens.TypeInput{
 		Supertokens: &supertokens.ConnectionInfo{
-			ConnectionURI: goDotEnvVariable("SUPERTOKENS_CONNECTION_URI"),
-			APIKey:        goDotEnvVariable("SUPERTOKENS_API_KEY"),
+			// These are the connection details of the app you created on supertokens.com
+			ConnectionURI: "https://st-dev-542a1560-4cc0-11ee-9fe8-cf09491f6e40.aws.supertokens.io",
+			APIKey:        "UnuW=a5b8hWCRS9yxzP2KYvyRE",
 		},
 		AppInfo: supertokens.AppInfo{
 			AppName:         "OPEX",
@@ -66,13 +62,6 @@ func SuperTokensInit() {
 			WebsiteBasePath: &websiteBasePath,
 		},
 		RecipeList: []supertokens.Recipe{
-			passwordless.Init(plessmodels.TypeInput{
-				FlowType: "USER_INPUT_CODE_AND_MAGIC_LINK",
-				ContactMethodEmail: plessmodels.ContactMethodEmailConfig{
-					Enabled: true,
-				},
-			}),
-			dashboard.Init(nil),
 			emailpassword.Init(nil),
 			session.Init(nil),
 		},
