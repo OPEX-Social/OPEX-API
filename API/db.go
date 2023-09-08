@@ -38,4 +38,29 @@ func ConnectMongoDB() {
 	}
 
 	fmt.Println("Pinged MongoDB Successfully. Connected to MongoDB!")
+
+	x, fetcherr := FetchRandomPosts(client, "IBX", "Blurbs")
+
+	if fetcherr == nil {
+		fmt.Println(x)
+	}
+}
+
+func FetchRandomPosts(client *mongo.Client, dbName, collectionName string) ([]bson.M, error) {
+	// Get a handle to the "Posts" collection
+	collection := client.Database(dbName).Collection(collectionName)
+
+	// Find and fetch all documents in the collection
+	cursor, err := collection.Find(context.Background(), bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var result []bson.M
+	if err := cursor.All(context.Background(), &result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
