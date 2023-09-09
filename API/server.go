@@ -3,8 +3,6 @@ package main
 
 // Import required packages
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/handlers"
@@ -79,37 +77,4 @@ func HandleRequests() {
 		handlers.AllowedOrigins([]string{"http://localhost:3000"}),
 		handlers.AllowCredentials(),
 	)(supertokens.Middleware(router)))
-}
-
-// Posts array
-type Posts []PostResponse
-
-func getPosts(w http.ResponseWriter, r *http.Request) {
-
-	postsSampleData := Posts{
-		PostResponse{
-			Author:    "ibxcodecat",
-			Content:   "I like cats!",
-			Likes:     0,
-			Reposts:   0,
-			Timestamp: 200,
-		},
-		{
-			Author:    "ibxcodecat",
-			Content:   "I like dogs!",
-			Likes:     0,
-			Reposts:   0,
-			Timestamp: 200,
-		},
-	}
-	fmt.Println("Endpoint Hit: getPosts")
-	json.NewEncoder(w).Encode(postsSampleData)
-}
-
-func createPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Endpoint Hit: createPost")
-}
-
-func Page(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "OPEX API Hit")
 }
