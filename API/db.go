@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -41,9 +42,12 @@ func ConnectMongoDB() {
 
 	x, fetcherr := FetchRandomPosts(client, "IBX", "Blurbs")
 
-	if fetcherr == nil {
-		fmt.Println(x)
+	if fetcherr != nil {
+		return
 	}
+
+	ProcessPostObjects(json.Marshal(x))
+
 }
 
 func FetchRandomPosts(client *mongo.Client, dbName, collectionName string) ([]bson.M, error) {

@@ -92,14 +92,14 @@ func getPosts(w http.ResponseWriter, r *http.Request) {
 			Content:   "I like cats!",
 			Likes:     0,
 			Reposts:   0,
-			Timestamp: "2021-01-01 00:00:00",
+			Timestamp: 200,
 		},
 		{
 			Author:    "ibxcodecat",
 			Content:   "I like dogs!",
 			Likes:     0,
 			Reposts:   0,
-			Timestamp: "2021-01-01 00:00:00",
+			Timestamp: 200,
 		},
 	}
 	fmt.Println("Endpoint Hit: getPosts")
