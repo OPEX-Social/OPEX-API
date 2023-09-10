@@ -18,7 +18,7 @@ If you discover any security vulnerabilities or have concerns about the security
 
 ### Code Contributions
 
-1. **Code Review**: All code contributions, including pull requests, should undergo thorough review by maintainers and contributors to identify and fix security vulnerabilities.
+1. **Code Review**: All code contributions, including pull requests, should undergo thorough review by maintainers.
 
 2. **Secure Coding Practices**: Follow secure coding practices such as input validation, output encoding, proper authentication, and authorization mechanisms.
 
@@ -26,35 +26,12 @@ If you discover any security vulnerabilities or have concerns about the security
 
 4. **Sensitive Data**: Avoid hardcoding sensitive information like API keys or credentials in the source code. Use environment variables or configuration files for this purpose.
 
-### Authentication and Authorization
+5. **Authorization**: Enforce strict authorization controls to ensure that users can only access the data and resources they are authorized to.
 
-1. **Authentication**: Implement secure user authentication mechanisms, such as OAuth, JWT, or OAuth2, to protect user data and prevent unauthorized access.
+6. **Data Encryption**: Use encryption protocols (e.g., HTTPS) to secure data transmission between clients and the API server.
 
-2. **Authorization**: Enforce strict authorization controls to ensure that users can only access the data and resources they are authorized to.
+7. **Data Validation**: Validate and sanitize user input to prevent injection attacks like SQL injection and Cross-Site Scripting (XSS).
 
-### Data Security
-
-1. **Data Encryption**: Use encryption protocols (e.g., HTTPS) to secure data transmission between clients and the API server.
-
-2. **Data Validation**: Validate and sanitize user input to prevent injection attacks like SQL injection and Cross-Site Scripting (XSS).
-
-### Infrastructure Security
-
-1. **Server Security**: Regularly update and patch the server and its software. Implement proper firewall rules and access controls.
-
-2. **Logging and Monitoring**: Implement logging and monitoring to detect and respond to security incidents in a timely manner.
-
-## Security Incident Response
-
-In the event of a security incident, we are committed to responding promptly and effectively. Our response process includes:
-
-1. **Assessment**: We will assess the severity and impact of the incident.
-
-2. **Mitigation**: Take immediate steps to mitigate the incident and prevent further harm.
-
-3. **Notification**: If the incident affects users' security, we will notify affected parties promptly.
-
-4. **Resolution**: Work to resolve the incident and prevent similar issues in the future.
 
 ## Maintainer Responsibilities
 
@@ -78,8 +55,20 @@ Contributors to this repository are responsible for:
 
 3. Reporting security issues responsibly.
 
-## Conclusion
+## Security Incident Response
 
-Security is a collective responsibility, and together we can maintain the security and integrity of the OPEX API repository. By adhering to these guidelines and best practices, we can ensure that OPEX remains a safe and secure platform for its users.
+In the event of a security incident, we are committed to responding promptly and effectively. Our response process includes:
 
-Thank you for your commitment to the security of OPEX API.
+1. **Assessment**: We will assess the severity and impact of the incident.
+
+2. **Mitigation**: Take immediate steps to mitigate the incident and prevent further harm.
+
+3. **Notification**: If the incident affects users' security, we will notify affected parties promptly.
+
+4. **Resolution**: Work to resolve the incident and prevent similar issues in the future.
+
+---
+
+Security is a collective responsibility, and together we can maintain the security and integrity of the OPEX API. By adhering to these guidelines and best practices, we can ensure that OPEX remains a safe and secure platform for its users.
+
+Thank you for your commitment to the security of OPEX.
