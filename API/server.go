@@ -25,6 +25,7 @@ func main() {
 
 	// Call the request handler function
 	HandleRequests()
+
 }
 
 // SuperTokensInit - Called by main() initializes SuperTokens
@@ -68,6 +69,8 @@ func HandleRequests() {
 	router.HandleFunc("/", Page)
 	router.HandleFunc("/posts", getPosts).Methods("GET")
 	router.HandleFunc("/posts", createPost).Methods("POST")
+
+	router.HandleFunc("/user", GetUserByID).Methods("GET")
 
 	// Adding handlers.CORS(options)(supertokens.Middleware(router))
 	http.ListenAndServe(":8081", handlers.CORS(

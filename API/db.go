@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -64,4 +65,44 @@ func DBFetchAllPosts(dbName, collectionName string) ([]bson.M, error) {
 	}
 
 	return result, nil
+}
+
+func DBFetchUser(requestedUserID string) (DBUser, error) {
+
+	db_name := GoDotEnvVariable("MONGO_DB_NAME")
+	collection_name := GoDotEnvVariable("MONGO_USER_COLLECTION")
+
+	// Get a handle to the "Users" collection
+	collection := mongoClient.Database(db_name).Collection(collection_name)
+
+	filter := bson.M{"_id": requestedUserID}
+
+	var dbUser DBUser
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Find and fetch the document in the collection
+	err := collection.FindOne(ctx, filter).Decode(&dbUser)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return DBUser{}, nil
+		} else {
+			return DBUser{}, err
+		}
+	}
+
+	fmt.Println("Found a single document:", dbUser)
+
+	// Construct and Return the user
+	dbUser = DBUser{
+		ID:            requestedUserID,
+		AccVerified:   dbUser.AccVerified,
+		EmailVerified: dbUser.EmailVerified,
+		Handle:        dbUser.Handle,
+		CreatedAt:     dbUser.CreatedAt,
+	}
+
+	return dbUser, nil
 }
