@@ -1,4 +1,4 @@
-module go.mod
+module OPEXAPI
 
 go 1.21.0
 
@@ -9,6 +9,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/supertokens/supertokens-golang v0.13.2
 	go.mongodb.org/mongo-driver v1.12.1
+	golang.org/x/time v0.3.0
 )
 
 require (

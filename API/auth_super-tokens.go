@@ -1,12 +1,9 @@
-// Version: 1.0
+// Version 1.0
 package main
 
-// Import required packages
 import (
-	"net/http"
+	"fmt"
 
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 	"github.com/supertokens/supertokens-golang/recipe/dashboard"
 	"github.com/supertokens/supertokens-golang/recipe/emailpassword"
 	"github.com/supertokens/supertokens-golang/recipe/emailverification"
@@ -14,19 +11,6 @@ import (
 	"github.com/supertokens/supertokens-golang/recipe/session"
 	"github.com/supertokens/supertokens-golang/supertokens"
 )
-
-// main - Entry point of the API
-func main() {
-
-	ConnectMongoDB()
-
-	// Initialize SuperTokens
-	SuperTokensInit()
-
-	// Call the request handler function
-	HandleRequests()
-
-}
 
 // SuperTokensInit - Called by main() initializes SuperTokens
 func SuperTokensInit() {
@@ -58,26 +42,6 @@ func SuperTokensInit() {
 	if err != nil {
 		panic(err.Error())
 	}
-}
 
-// HandleRequests - Called by main() handles all API requests
-func HandleRequests() {
-	// creates a new instance of a mux router and assigns it to router
-	router := mux.NewRouter().StrictSlash(true)
-
-	//Add our API routes and specify their respective functions and methods
-	router.HandleFunc("/", Page)
-	router.HandleFunc("/posts", getPosts).Methods("GET")
-	router.HandleFunc("/posts", createPost).Methods("POST")
-
-	router.HandleFunc("/user", GetUserByID).Methods("GET")
-
-	// Adding handlers.CORS(options)(supertokens.Middleware(router))
-	http.ListenAndServe(":8081", handlers.CORS(
-		handlers.AllowedHeaders(append([]string{"Content-Type"},
-			supertokens.GetAllCORSHeaders()...)),
-		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
-		handlers.AllowedOrigins([]string{"http://localhost:3000"}),
-		handlers.AllowCredentials(),
-	)(supertokens.Middleware(router)))
+	fmt.Println("SuperTokens Initialized")
 }
