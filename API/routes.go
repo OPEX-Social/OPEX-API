@@ -12,26 +12,8 @@ import (
 // Posts array
 type Posts []PostResponse
 
+// api/posts - GET
 func getPosts(w http.ResponseWriter, r *http.Request) {
-
-	/*
-		postsSampleData := Posts{
-			PostResponse{
-				Author:    "ibxcodecat",
-				Content:   "I like cats!",
-				Likes:     0,
-				Reposts:   0,
-				Timestamp: 200,
-			},
-			{
-				Author:    "ibxcodecat",
-				Content:   "I like dogs!",
-				Likes:     0,
-				Reposts:   0,
-				Timestamp: 200,
-			},
-		}
-	*/
 
 	fmt.Println("Endpoint Hit: getPosts")
 
@@ -49,6 +31,7 @@ func getPosts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(posts)
 }
 
+// api/posts - POST
 func createPost(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Endpoint Hit: createPost")
 }
@@ -57,6 +40,7 @@ func Page(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "OPEX API Hit")
 }
 
+// api/user - GET
 func GetUserByID(w http.ResponseWriter, r *http.Request) {
 
 	var userReq UserRequest
@@ -113,6 +97,10 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 		EmailVerified:   dbUser.EmailVerified,
 		Handle:          dbUser.Handle,
 		CreatedAt:       dbUser.CreatedAt,
+		FollowerCount:   dbUser.FollowerCount,
+		FollowingCount:  dbUser.FollowingCount,
+		LikeCount:       dbUser.LikeCount,
+		RepostCount:     dbUser.RepostCount,
 	}
 
 	// Send the response

@@ -97,11 +97,15 @@ func DBFetchUser(requestedUserID string) (DBUser, error) {
 
 	// Construct and Return the user
 	dbUser = DBUser{
-		ID:            requestedUserID,
-		AccVerified:   dbUser.AccVerified,
-		EmailVerified: dbUser.EmailVerified,
-		Handle:        dbUser.Handle,
-		CreatedAt:     dbUser.CreatedAt,
+		ID:             requestedUserID,
+		AccVerified:    dbUser.AccVerified,
+		EmailVerified:  dbUser.EmailVerified,
+		Handle:         dbUser.Handle,
+		CreatedAt:      dbUser.CreatedAt,
+		FollowerCount:  dbUser.FollowerCount,
+		FollowingCount: dbUser.FollowingCount,
+		LikeCount:      dbUser.LikeCount,
+		RepostCount:    dbUser.RepostCount,
 	}
 
 	return dbUser, nil
