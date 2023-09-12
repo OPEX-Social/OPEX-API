@@ -13,8 +13,8 @@ const (
 
 // APIRouteInfo - Information about an API route
 type APIRouteInfo struct {
-	RequestMethod string        // The request method for this route
-	Path          string        // The path for this route
-	LimiterWindow time.Duration // The fixed time window for the rate limit
-	LimiterMax    int           // The number of requests allowed in the time window
+	AllowedRequestMethods []string      // The request method for this route
+	Path                  string        // The path for this route
+	LimiterWindow         time.Duration // The fixed time window for the rate limit
+	LimiterMax            int           // The number of requests allowed in the time window
 }

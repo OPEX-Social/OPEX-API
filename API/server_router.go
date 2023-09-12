@@ -29,84 +29,105 @@ func HandleRequests() {
 	// Create a new APIRouteInfo struct for each route
 
 	route_getMyUser := APIRouteInfo{
-		RequestMethod: METHOD_GET,
-		LimiterWindow: time.Second * 5,
-		LimiterMax:    2,
-		Path:          "/users/@me",
+		AllowedRequestMethods: []string{METHOD_GET},
+		LimiterWindow:         time.Second * 5,
+		LimiterMax:            2,
+		Path:                  "/users/@me",
 	}
 
 	// Create the get user route @ api/user - GET
 	route_getAnyUser := APIRouteInfo{
-		RequestMethod: METHOD_GET,
-		LimiterWindow: time.Second * 5,
-		LimiterMax:    2,
-		Path:          "/users/{id}",
+		AllowedRequestMethods: []string{METHOD_GET},
+		LimiterWindow:         time.Second * 5,
+		LimiterMax:            2,
+		Path:                  "/users/{id}",
 	}
 
 	// Create the create user route @ api/user - POST
 	route_createUser := APIRouteInfo{
-		RequestMethod: METHOD_POST,
-		LimiterWindow: time.Second * 120,
-		LimiterMax:    2,
-		Path:          "/users/create",
+		AllowedRequestMethods: []string{METHOD_POST},
+		LimiterWindow:         time.Second * 120,
+		LimiterMax:            2,
+		Path:                  "/users/create",
 	}
 
 	// Create the update user route @ api/user - PUT
 	route_updateUser := APIRouteInfo{
-		RequestMethod: METHOD_PUT,
-		LimiterWindow: time.Second * 120,
-		LimiterMax:    20,
-		Path:          "/users/@me",
+		AllowedRequestMethods: []string{METHOD_PUT},
+		LimiterWindow:         time.Second * 120,
+		LimiterMax:            20,
+		Path:                  "/users/@me",
 	}
 
 	// Create the delete user route @ api/user - DELETE
 	route_deleteUser := APIRouteInfo{
-		RequestMethod: METHOD_DELETE,
-		LimiterWindow: time.Second * 10,
-		LimiterMax:    2,
-		Path:          "/users",
+		AllowedRequestMethods: []string{METHOD_DELETE},
+		LimiterWindow:         time.Second * 10,
+		LimiterMax:            2,
+		Path:                  "/users",
 	}
+
+	router.Handle(
+		route_getMyUser.Path,
+		MethodNotAllowedMiddleware(route_getMyUser.AllowedRequestMethods)(
+			rate_limiter.RateLimit(
+				route_getMyUser.Path,
+				route_getMyUser.LimiterMax,
+				route_getMyUser.LimiterWindow.Abs(),
+				http.HandlerFunc(GetUserByID),
+			),
+		),
+	)
 
 	// Add the get user route to the router
 	router.Handle(
 		route_getAnyUser.Path,
-		rate_limiter.RateLimit(
-			route_getAnyUser.Path,
-			route_getAnyUser.LimiterMax,
-			route_getAnyUser.LimiterWindow.Abs(),
-			http.HandlerFunc(GetUserByID),
+		MethodNotAllowedMiddleware(route_getAnyUser.AllowedRequestMethods)(
+			rate_limiter.RateLimit(
+				route_getAnyUser.Path,
+				route_getAnyUser.LimiterMax,
+				route_getAnyUser.LimiterWindow.Abs(),
+				http.HandlerFunc(GetUserByID),
+			),
 		),
 	)
 
 	// Add the create user route to the router
 	router.Handle(
 		route_createUser.Path,
-		rate_limiter.RateLimit(
-			route_createUser.Path,
-			route_createUser.LimiterMax,
-			route_createUser.LimiterWindow.Abs(),
-			http.HandlerFunc(CreateUser),
+		MethodNotAllowedMiddleware(route_createUser.AllowedRequestMethods)(
+			rate_limiter.RateLimit(
+				route_createUser.Path,
+				route_createUser.LimiterMax,
+				route_createUser.LimiterWindow.Abs(),
+				http.HandlerFunc(CreateUser),
+			),
 		),
 	)
 
 	// Add the update user route to the router
 	router.Handle(
-		route_createUser.Path,
-		rate_limiter.RateLimit(
-			route_updateUser.Path,
-			route_updateUser.LimiterMax,
-			route_updateUser.LimiterWindow.Abs(),
-			http.HandlerFunc(UpdateUser),
+		route_updateUser.Path,
+		MethodNotAllowedMiddleware(route_updateUser.AllowedRequestMethods)(
+			rate_limiter.RateLimit(
+				route_updateUser.Path,
+				route_updateUser.LimiterMax,
+				route_updateUser.LimiterWindow.Abs(),
+				http.HandlerFunc(UpdateUser),
+			),
 		),
 	)
 
+	// Add the delete user route to the router
 	router.Handle(
 		route_deleteUser.Path,
-		rate_limiter.RateLimit(
-			route_deleteUser.Path,
-			route_deleteUser.LimiterMax,
-			route_deleteUser.LimiterWindow.Abs(),
-			http.HandlerFunc(DeleteUser),
+		MethodNotAllowedMiddleware(route_deleteUser.AllowedRequestMethods)(
+			rate_limiter.RateLimit(
+				route_deleteUser.Path,
+				route_deleteUser.LimiterMax,
+				route_deleteUser.LimiterWindow.Abs(),
+				http.HandlerFunc(DeleteUser),
+			),
 		),
 	)
 
