@@ -3,32 +3,26 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
+
+func HandleGetAuthenticatedUser(w http.ResponseWriter, r *http.Request) {
+
+}
 
 // api/user - GET
 func GetUserByID(w http.ResponseWriter, r *http.Request) {
 
-	var userReq UserRequest
-	var dbUser DBUser
-
-	err := DecodeJSONBody(w, r, &userReq)
-
-	// Check for malformed request error and handle it
-	if err != nil {
-		var mr *malformedRequest
-		if errors.As(err, &mr) {
-			http.Error(w, mr.msg, mr.status)
-		} else {
-			log.Print(err.Error())
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		}
-		return
+	//Extract the {id} variable from the request
+	vars := mux.Vars(r)
+	userReq := UserRequest{
+		ID: vars["id"],
 	}
 
+	// Check if the user ID is empty
 	if userReq.ID == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(ErrorResponse{
@@ -39,7 +33,7 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch the user from MongoDB
-	dbUser, err = DBFetchUser(userReq.ID)
+	dbUser, err := DBFetchUser(userReq.ID)
 
 	fmt.Println(dbUser)
 
@@ -55,7 +49,7 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 		} else {
 			//There was not a database error so the user was not found
 			w.WriteHeader(http.StatusNotFound)
-			json.NewEncoder(w).Encode(ErrorResponse{StatusCode: http.StatusNotFound, ErrorMessage: "User not found"})
+			json.NewEncoder(w).Encode(ErrorResponse{StatusCode: http.StatusNotFound, ErrorMessage: "User with ID [" + userReq.ID + "] not found!"})
 			return
 		}
 	}
@@ -74,4 +68,16 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 
 	// Send the response
 	json.NewEncoder(w).Encode(returnedAndProcessedUser)
+}
+
+func CreateNewUser(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+
 }

@@ -20,7 +20,7 @@ type PostResponse struct {
 
 // Data structure for a user json request
 type UserRequest struct {
-	ID string `json:"user_id"`
+	ID string `json:"user_id"` //The user's unique ID provided by MongoDB and SuperTokens
 }
 
 // Data structure for a user collection from MongoDB

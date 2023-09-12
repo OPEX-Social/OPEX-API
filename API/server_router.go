@@ -2,13 +2,13 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/supertokens/supertokens-golang/recipe/session"
 	"github.com/supertokens/supertokens-golang/supertokens"
 )
 
@@ -19,15 +19,20 @@ func HandleRequests() {
 
 	//Add our API routes and specify their respective functions and methods
 	router.HandleFunc("/", Page)
-	router.HandleFunc("/posts", getPosts).Methods("GET")
-	router.HandleFunc("/posts", createPost).Methods("POST")
-
-	router.HandleFunc("/user", GetUserByID).Methods("GET")
 
 	rate_limiter := NewRateLimiter()
 
 	// Create a new APIRouteInfo struct for each route
 
+	/*
+		route_getPosts := APIRouteInfo{
+			AllowedRequestMethods: []string{METHOD_GET},
+			LimiterWindow:         time.Second * 5,
+			LimiterMax:            2,
+			Path:                  "/posts",
+		}*/
+
+	// Create the get user route @ api/user - GET
 	route_getMyUser := APIRouteInfo{
 		AllowedRequestMethods: []string{METHOD_GET},
 		LimiterWindow:         time.Second * 5,
@@ -44,11 +49,11 @@ func HandleRequests() {
 	}
 
 	// Create the create user route @ api/user - POST
-	route_createUser := APIRouteInfo{
+	route_createNewUser := APIRouteInfo{
 		AllowedRequestMethods: []string{METHOD_POST},
 		LimiterWindow:         time.Second * 120,
 		LimiterMax:            2,
-		Path:                  "/users/create",
+		Path:                  "/users",
 	}
 
 	// Create the update user route @ api/user - PUT
@@ -64,9 +69,10 @@ func HandleRequests() {
 		AllowedRequestMethods: []string{METHOD_DELETE},
 		LimiterWindow:         time.Second * 10,
 		LimiterMax:            2,
-		Path:                  "/users",
+		Path:                  "/users/@me",
 	}
 
+	// Add the get user route to the router
 	router.Handle(
 		route_getMyUser.Path,
 		MethodNotAllowedMiddleware(route_getMyUser.AllowedRequestMethods)(
@@ -74,7 +80,10 @@ func HandleRequests() {
 				route_getMyUser.Path,
 				route_getMyUser.LimiterMax,
 				route_getMyUser.LimiterWindow.Abs(),
-				http.HandlerFunc(GetUserByID),
+				session.VerifySession(
+					nil,
+					HandleGetAuthenticatedUser,
+				),
 			),
 		),
 	)
@@ -83,24 +92,29 @@ func HandleRequests() {
 	router.Handle(
 		route_getAnyUser.Path,
 		MethodNotAllowedMiddleware(route_getAnyUser.AllowedRequestMethods)(
-			rate_limiter.RateLimit(
-				route_getAnyUser.Path,
-				route_getAnyUser.LimiterMax,
-				route_getAnyUser.LimiterWindow.Abs(),
-				http.HandlerFunc(GetUserByID),
+			ParseFormMiddleware(
+				rate_limiter.RateLimit(
+					route_getAnyUser.Path,
+					route_getAnyUser.LimiterMax,
+					route_getAnyUser.LimiterWindow.Abs(),
+					http.HandlerFunc(GetUserByID),
+				),
 			),
 		),
 	)
 
 	// Add the create user route to the router
 	router.Handle(
-		route_createUser.Path,
-		MethodNotAllowedMiddleware(route_createUser.AllowedRequestMethods)(
+		route_createNewUser.Path,
+		MethodNotAllowedMiddleware(route_createNewUser.AllowedRequestMethods)(
 			rate_limiter.RateLimit(
-				route_createUser.Path,
-				route_createUser.LimiterMax,
-				route_createUser.LimiterWindow.Abs(),
-				http.HandlerFunc(CreateUser),
+				route_createNewUser.Path,
+				route_createNewUser.LimiterMax,
+				route_createNewUser.LimiterWindow.Abs(),
+				session.VerifySession(
+					nil,
+					CreateNewUser,
+				),
 			),
 		),
 	)
@@ -113,7 +127,10 @@ func HandleRequests() {
 				route_updateUser.Path,
 				route_updateUser.LimiterMax,
 				route_updateUser.LimiterWindow.Abs(),
-				http.HandlerFunc(UpdateUser),
+				session.VerifySession(
+					nil,
+					UpdateUser,
+				),
 			),
 		),
 	)
@@ -126,7 +143,10 @@ func HandleRequests() {
 				route_deleteUser.Path,
 				route_deleteUser.LimiterMax,
 				route_deleteUser.LimiterWindow.Abs(),
-				http.HandlerFunc(DeleteUser),
+				session.VerifySession(
+					nil,
+					DeleteUser,
+				),
 			),
 		),
 	)
@@ -144,30 +164,6 @@ func HandleRequests() {
 		handlers.AllowedOrigins([]string{"http://localhost:3000"}),
 		handlers.AllowCredentials(),
 	)(supertokens.Middleware(router)))
-}
-
-// Posts array
-type Posts []PostResponse
-
-// api/posts - GET
-func getPosts(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Println("Endpoint Hit: getPosts")
-
-	// Fetch all posts from MongoDB
-	db_posts, err := DBFetchAllPosts(GoDotEnvVariable("MONGO_DB_NAME"), GoDotEnvVariable("MONGO_POST_COLLECTION"))
-	if err != nil {
-		fmt.Println("Error fetching posts from MongoDB:", err)
-		return
-	}
-
-	// Send the response
-	json.NewEncoder(w).Encode(posts)
-}
-
-// api/posts - POST
-func createPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Endpoint Hit: createPost")
 }
 
 func Page(w http.ResponseWriter, r *http.Request) {
