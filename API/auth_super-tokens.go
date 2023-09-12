@@ -19,8 +19,8 @@ func SuperTokensInit() {
 	err := supertokens.Init(supertokens.TypeInput{
 		Supertokens: &supertokens.ConnectionInfo{
 			// These are the connection details of the app you created on supertokens.com
-			ConnectionURI: GoDotEnvVariable("SUPERTOKENS_CONNECTION_URI"),
-			APIKey:        GoDotEnvVariable("SUPERTOKENS_API_KEY"),
+			ConnectionURI: EnvVar("SUPERTOKENS_CONNECTION_URI"),
+			APIKey:        EnvVar("SUPERTOKENS_API_KEY"),
 		},
 		AppInfo: supertokens.AppInfo{
 			AppName:         "OPEX",

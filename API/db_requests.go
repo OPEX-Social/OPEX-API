@@ -19,7 +19,7 @@ func ConnectMongoDB() {
 
 	// Set client options
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	uri := GoDotEnvVariable("MONGO_URI")
+	uri := EnvVar("MONGO_URI")
 	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
 
 	// Create a new client and connect to the server
@@ -69,8 +69,8 @@ func DBFetchAllPosts(dbName, collectionName string) ([]bson.M, error) {
 
 func DBFetchUser(requestedUserID string) (DBUser, error) {
 
-	db_name := GoDotEnvVariable("MONGO_DB_NAME")
-	collection_name := GoDotEnvVariable("MONGO_USER_COLLECTION")
+	db_name := EnvVar("MONGO_DB_NAME")
+	collection_name := EnvVar("MONGO_USER_COLLECTION")
 
 	// Get a handle to the "Users" collection
 	collection := mongoClient.Database(db_name).Collection(collection_name)
