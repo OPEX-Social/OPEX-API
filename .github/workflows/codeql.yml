@@ -1,48 +1,25 @@
-name: "CodeQL"
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v3
 
-on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
-  schedule:
-    - cron: '38 22 * * 6'
+  - name: Initialize CodeQL
+    uses: github/codeql-action/init@v2
+    with:
+      languages: ${{ matrix.language }}
 
-jobs:
-  analyze:
-    name: Analyze
-    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
-    timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
+  - name: Set up Go
+    uses: actions/setup-go@v2
+    with:
+      go-version: 1.21.1 # Specify the Go version here
 
-    strategy:
-      fail-fast: false
-      matrix:
-        language: ['go']
-        go-version: ['1.16'] # Specify the Go version here
+  - name: Autobuild
+    uses: github/codeql-action/autobuild@v2
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  - run: |
+      echo "Run, Build Application using script"
+      ./location_of_script_within_repo/buildscript.sh
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: ${{ matrix.language }}
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
-        with:
-          go-version: ${{ matrix.go-version }} # Specify the Go version here
-
-      - run: |
-          echo "Run, Build Application using script"
-          ./location_of_script_within_repo/buildscript.sh
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
-        with:
-          category: "/language:${{matrix.language}}"
+  - name: Perform CodeQL Analysis
+    uses: github/codeql-action/analyze@v2
+    with:
+      category: "/language:${{matrix.language}}"
